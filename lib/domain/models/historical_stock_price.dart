@@ -5,7 +5,11 @@ class HistoricalStockPrice extends Equatable {
     required this.ticker,
     required this.at,
     required this.price,
-  });
+  }) {
+    if (ticker.isEmpty) {
+      throw ArgumentError.value('', 'ticker', 'Ticker must to have a value');
+    }
+  }
 
   final String ticker;
   final DateTime at;
