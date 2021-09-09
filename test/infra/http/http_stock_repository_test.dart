@@ -191,6 +191,14 @@ main() {
 
       expect(result, CompanyInfo.empty(ticker.abreviation));
     });
+
+    test('Should throw if HttpClient.request throws', () async {
+      when(httpClient.request(url)).thenThrow(Error());
+
+      final future = sut.companyInfo(ticker);
+
+      expect(future, throwsA(isA<Error>()));
+    });
   });
 }
 
