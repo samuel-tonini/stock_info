@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:stock_info/domain/models/models.dart';
 
 import 'package:stock_info/domain/models/ticker.dart';
 
@@ -24,6 +25,7 @@ main() {
       );
       when(httpClient.request(url)).thenAnswer((_) async => sutResult);
     });
+
     test('Should call HttpClient with correct values', () async {
       await sut.loadTickers();
       verify(httpClient.request(url)).called(1);
@@ -78,6 +80,116 @@ main() {
       when(httpClient.request(url)).thenThrow(Error());
       final future = sut.loadTickers();
       expect(future, throwsA(isA<Error>()));
+    });
+  });
+
+  group('LoadCompanyInfoRepository', () {
+    late String ticker;
+    late String address;
+    late String city;
+    late String state;
+    late String zip;
+    late String phone;
+    late String webSite;
+    late String industry;
+    late String sector;
+    late String country;
+    late String description;
+    late CompanyInfo companyInfo;
+
+    setUp(() {
+      httpClient = HttpClientSpy();
+      sut = HttpStockRepository(httpClient);
+      ticker = 'AAPL';
+      address = 'One Apple Park Way';
+      city = 'Cupertino';
+      state = 'CA';
+      zip = '95014';
+      phone = '408-996-1010';
+      webSite = 'http://www.apple.com';
+      industry = 'Consumer Electronics';
+      sector = 'Technology';
+      country = 'United States';
+      description =
+          'Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide.';
+      url = '/qu/quote/$ticker/asset-profile';
+      sutResult = jsonDecode(
+        '{"assetProfile":{"address1":"$address","city":"$city","state":"$state","zip":"$zip","country":"$country","phone":"$phone","website":"$webSite","industry":"$industry","sector":"$sector","longBusinessSummary":"$description","fullTimeEmployees":147000,"companyOfficers":[{"maxAge":1,"name":"Mr. Timothy D. Cook","age":59,"title":"CEO & Director","yearBorn":1961,"fiscalYear":2020,"totalPay":{"raw":14769259,"fmt":"14.77M","longFmt":"14,769,259"},"exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}},{"maxAge":1,"name":"Mr. Luca  Maestri","age":56,"title":"CFO & Sr. VP","yearBorn":1964,"fiscalYear":2020,"totalPay":{"raw":4595583,"fmt":"4.6M","longFmt":"4,595,583"},"exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}},{"maxAge":1,"name":"Mr. Jeffrey E. Williams","age":56,"title":"Chief Operating Officer","yearBorn":1964,"fiscalYear":2020,"totalPay":{"raw":4594137,"fmt":"4.59M","longFmt":"4,594,137"},"exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}},{"maxAge":1,"name":"Ms. Katherine L. Adams","age":56,"title":"Sr. VP, Gen. Counsel & Sec.","yearBorn":1964,"fiscalYear":2020,"totalPay":{"raw":4591310,"fmt":"4.59M","longFmt":"4,591,310"},"exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}},{"maxAge":1,"name":"Ms. Deirdre  O\'Brien","age":53,"title":"Sr. VP of People & Retail","yearBorn":1967,"fiscalYear":2020,"totalPay":{"raw":4614684,"fmt":"4.61M","longFmt":"4,614,684"},"exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}},{"maxAge":1,"name":"Mr. Chris  Kondo","title":"Sr. Director of Corp. Accounting","exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}},{"maxAge":1,"name":"Mr. James  Wilson","title":"Chief Technology Officer","exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}},{"maxAge":1,"name":"Ms. Mary  Demby","title":"Chief Information Officer","exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}},{"maxAge":1,"name":"Ms. Nancy  Paxton","title":"Sr. Director of Investor Relations & Treasury","exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}},{"maxAge":1,"name":"Mr. Greg  Joswiak","title":"Sr. VP of Worldwide Marketing","exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}}],"auditRisk":3,"boardRisk":1,"compensationRisk":2,"shareHolderRightsRisk":1,"overallRisk":1,"governanceEpochDate":1625097600,"compensationAsOfEpochDate":1609372800,"maxAge":86400}}',
+      );
+      companyInfo = CompanyInfo(
+        ticker: ticker,
+        address: address,
+        city: city,
+        state: state,
+        zip: zip,
+        phone: phone,
+        webSite: webSite,
+        industry: industry,
+        sector: sector,
+        country: country,
+        description: description,
+      );
+      when(httpClient.request(url)).thenAnswer((_) async => sutResult);
+    });
+
+    test('Should call HttpClient with correct values', () async {
+      await sut.companyInfo(ticker);
+
+      verify(httpClient.request(url)).called(1);
+    });
+
+    test('Should return HttpClient.request result converted to company info', () async {
+      final result = await sut.companyInfo(ticker);
+
+      expect(result, companyInfo);
+    });
+
+    test('Should return empty company info if HttpClient.request returns empty', () async {
+      when(httpClient.request(url)).thenAnswer((_) async => '');
+
+      final result = await sut.companyInfo(ticker);
+
+      expect(result, CompanyInfo.empty(ticker));
+    });
+
+    test('Should return empty company info if HttpClient.request returns null', () async {
+      when(httpClient.request(url)).thenAnswer((_) async => null);
+
+      final result = await sut.companyInfo(ticker);
+
+      expect(result, CompanyInfo.empty(ticker));
+    });
+
+    test('Should return empty company info if HttpClient.request returns without "assetProfile" field', () async {
+      when(httpClient.request(url)).thenAnswer((_) async => jsonDecode('{"any_key":"any_value"}'));
+
+      final result = await sut.companyInfo(ticker);
+
+      expect(result, CompanyInfo.empty(ticker));
+    });
+
+    test('Should return empty company info if HttpClient.request returns null "assetProfile" field', () async {
+      when(httpClient.request(url)).thenAnswer((_) async => jsonDecode('{"assetProfile":null}'));
+
+      final result = await sut.companyInfo(ticker);
+
+      expect(result, CompanyInfo.empty(ticker));
+    });
+
+    test('Should return empty company info if HttpClient.request returns an empty "assetProfile" field', () async {
+      when(httpClient.request(url)).thenAnswer((_) async => jsonDecode('{"assetProfile": ""}'));
+
+      final result = await sut.companyInfo(ticker);
+
+      expect(result, CompanyInfo.empty(ticker));
+    });
+
+    test('Should return empty company info if HttpClient.request returns an invalid "assetProfile" field', () async {
+      when(httpClient.request(url)).thenAnswer((_) async => jsonDecode('{"assetProfile": {"any_key":"any_value"}}'));
+
+      final result = await sut.companyInfo(ticker);
+
+      expect(result, CompanyInfo.empty(ticker));
     });
   });
 }
