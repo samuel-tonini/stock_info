@@ -7,7 +7,7 @@ class LoadCompanyInfoUsecase {
 
   final LoadCompanyInfoRepository loadCompanyInfoRepository;
 
-  Future<CompanyInfo> call(String ticker) async {
+  Future<CompanyInfo> call(Ticker ticker) async {
     final result = await loadCompanyInfoRepository.companyInfo(ticker);
     return result;
   }

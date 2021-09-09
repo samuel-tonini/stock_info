@@ -84,7 +84,7 @@ main() {
   });
 
   group('LoadCompanyInfoRepository', () {
-    late String ticker;
+    late Ticker ticker;
     late String address;
     late String city;
     late String state;
@@ -100,7 +100,7 @@ main() {
     setUp(() {
       httpClient = HttpClientSpy();
       sut = HttpStockRepository(httpClient);
-      ticker = 'AAPL';
+      ticker = Ticker('AAPL');
       address = 'One Apple Park Way';
       city = 'Cupertino';
       state = 'CA';
@@ -112,12 +112,12 @@ main() {
       country = 'United States';
       description =
           'Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide.';
-      url = '/qu/quote/$ticker/asset-profile';
+      url = '/qu/quote/${ticker.abreviation}/asset-profile';
       sutResult = jsonDecode(
         '{"assetProfile":{"address1":"$address","city":"$city","state":"$state","zip":"$zip","country":"$country","phone":"$phone","website":"$webSite","industry":"$industry","sector":"$sector","longBusinessSummary":"$description","fullTimeEmployees":147000,"companyOfficers":[{"maxAge":1,"name":"Mr. Timothy D. Cook","age":59,"title":"CEO & Director","yearBorn":1961,"fiscalYear":2020,"totalPay":{"raw":14769259,"fmt":"14.77M","longFmt":"14,769,259"},"exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}},{"maxAge":1,"name":"Mr. Luca  Maestri","age":56,"title":"CFO & Sr. VP","yearBorn":1964,"fiscalYear":2020,"totalPay":{"raw":4595583,"fmt":"4.6M","longFmt":"4,595,583"},"exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}},{"maxAge":1,"name":"Mr. Jeffrey E. Williams","age":56,"title":"Chief Operating Officer","yearBorn":1964,"fiscalYear":2020,"totalPay":{"raw":4594137,"fmt":"4.59M","longFmt":"4,594,137"},"exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}},{"maxAge":1,"name":"Ms. Katherine L. Adams","age":56,"title":"Sr. VP, Gen. Counsel & Sec.","yearBorn":1964,"fiscalYear":2020,"totalPay":{"raw":4591310,"fmt":"4.59M","longFmt":"4,591,310"},"exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}},{"maxAge":1,"name":"Ms. Deirdre  O\'Brien","age":53,"title":"Sr. VP of People & Retail","yearBorn":1967,"fiscalYear":2020,"totalPay":{"raw":4614684,"fmt":"4.61M","longFmt":"4,614,684"},"exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}},{"maxAge":1,"name":"Mr. Chris  Kondo","title":"Sr. Director of Corp. Accounting","exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}},{"maxAge":1,"name":"Mr. James  Wilson","title":"Chief Technology Officer","exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}},{"maxAge":1,"name":"Ms. Mary  Demby","title":"Chief Information Officer","exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}},{"maxAge":1,"name":"Ms. Nancy  Paxton","title":"Sr. Director of Investor Relations & Treasury","exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}},{"maxAge":1,"name":"Mr. Greg  Joswiak","title":"Sr. VP of Worldwide Marketing","exercisedValue":{"raw":0,"fmt":null,"longFmt":"0"},"unexercisedValue":{"raw":0,"fmt":null,"longFmt":"0"}}],"auditRisk":3,"boardRisk":1,"compensationRisk":2,"shareHolderRightsRisk":1,"overallRisk":1,"governanceEpochDate":1625097600,"compensationAsOfEpochDate":1609372800,"maxAge":86400}}',
       );
       companyInfo = CompanyInfo(
-        ticker: ticker,
+        ticker: ticker.abreviation,
         address: address,
         city: city,
         state: state,
@@ -149,7 +149,7 @@ main() {
 
       final result = await sut.companyInfo(ticker);
 
-      expect(result, CompanyInfo.empty(ticker));
+      expect(result, CompanyInfo.empty(ticker.abreviation));
     });
 
     test('Should return empty company info if HttpClient.request returns null', () async {
@@ -157,7 +157,7 @@ main() {
 
       final result = await sut.companyInfo(ticker);
 
-      expect(result, CompanyInfo.empty(ticker));
+      expect(result, CompanyInfo.empty(ticker.abreviation));
     });
 
     test('Should return empty company info if HttpClient.request returns without "assetProfile" field', () async {
@@ -165,7 +165,7 @@ main() {
 
       final result = await sut.companyInfo(ticker);
 
-      expect(result, CompanyInfo.empty(ticker));
+      expect(result, CompanyInfo.empty(ticker.abreviation));
     });
 
     test('Should return empty company info if HttpClient.request returns null "assetProfile" field', () async {
@@ -173,7 +173,7 @@ main() {
 
       final result = await sut.companyInfo(ticker);
 
-      expect(result, CompanyInfo.empty(ticker));
+      expect(result, CompanyInfo.empty(ticker.abreviation));
     });
 
     test('Should return empty company info if HttpClient.request returns an empty "assetProfile" field', () async {
@@ -181,7 +181,7 @@ main() {
 
       final result = await sut.companyInfo(ticker);
 
-      expect(result, CompanyInfo.empty(ticker));
+      expect(result, CompanyInfo.empty(ticker.abreviation));
     });
 
     test('Should return empty company info if HttpClient.request returns an invalid "assetProfile" field', () async {
@@ -189,7 +189,7 @@ main() {
 
       final result = await sut.companyInfo(ticker);
 
-      expect(result, CompanyInfo.empty(ticker));
+      expect(result, CompanyInfo.empty(ticker.abreviation));
     });
   });
 }

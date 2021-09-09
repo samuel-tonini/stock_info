@@ -20,19 +20,21 @@ class HttpStockRepository implements LoadStockTickersRepository, LoadCompanyInfo
   }
 
   @override
-  Future<CompanyInfo> companyInfo(String ticker) async {
-    final rawJson = await httpClient.request('/qu/quote/$ticker/asset-profile');
-    if (rawJson == null || rawJson == '') return CompanyInfo.empty(ticker);
+  Future<CompanyInfo> companyInfo(Ticker ticker) async {
+    final rawJson = await httpClient.request('/qu/quote/${ticker.abreviation}/asset-profile');
+    if (rawJson == null || rawJson == '') return CompanyInfo.empty(ticker.abreviation);
     final rawMap = Map.from(rawJson);
-    if (!rawMap.containsKey('assetProfile') || rawMap['assetProfile'] == null) return CompanyInfo.empty(ticker);
+    if (!rawMap.containsKey('assetProfile') || rawMap['assetProfile'] == null) {
+      return CompanyInfo.empty(ticker.abreviation);
+    }
     Map rawCompanyInfo;
     try {
       rawCompanyInfo = Map.from(rawMap['assetProfile']);
     } catch (_) {
-      return CompanyInfo.empty(ticker);
+      return CompanyInfo.empty(ticker.abreviation);
     }
     return JsonCompanyInfo.fromJson(
-      ticker: ticker,
+      ticker: ticker.abreviation,
       json: rawCompanyInfo,
     );
   }

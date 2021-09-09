@@ -8,12 +8,12 @@ import 'package:stock_info/domain/models/models.dart';
 
 main() {
   late LoadCompanyInfoUsecase sut;
-  late String ticker;
+  late Ticker ticker;
   late LoadCompanyInfoRepositorySpy loadCompanyInfoRepository;
   late CompanyInfo companyInfo;
 
   setUp(() {
-    ticker = 'AAPL';
+    ticker = Ticker('AAPL');
     loadCompanyInfoRepository = LoadCompanyInfoRepositorySpy();
     sut = LoadCompanyInfoUsecase(loadCompanyInfoRepository);
     companyInfo = CompanyInfo(
@@ -48,10 +48,10 @@ main() {
 
 class LoadCompanyInfoRepositorySpy extends Mock implements LoadCompanyInfoRepository {
   @override
-  Future<CompanyInfo> companyInfo(String ticker) async {
+  Future<CompanyInfo> companyInfo(Ticker ticker) async {
     return super.noSuchMethod(
       Invocation.method(#companyInfo, [ticker]),
-      returnValue: CompanyInfo.empty(ticker),
+      returnValue: CompanyInfo.empty(ticker.abreviation),
     );
   }
 }
