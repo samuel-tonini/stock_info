@@ -1,4 +1,6 @@
-class CompanyInfo {
+import 'package:equatable/equatable.dart';
+
+class CompanyInfo extends Equatable {
   CompanyInfo({
     required this.ticker,
     required this.address,
@@ -60,5 +62,22 @@ class CompanyInfo {
       webSite: '',
       ticker: ticker,
     );
+  }
+
+  @override
+  List<Object?> get props {
+    return [
+      ticker,
+      address,
+      city,
+      state,
+      zip,
+      phone,
+      webSite,
+      industry,
+      sector,
+      description,
+      country,
+    ];
   }
 }
