@@ -11,7 +11,11 @@ class CompanyInfo {
     required this.sector,
     required this.description,
     required this.country,
-  });
+  }) {
+    if (ticker.isEmpty) {
+      throw ArgumentError.value('', 'ticker', 'Ticker must to have a value');
+    }
+  }
 
   final String ticker;
   final String address;
@@ -31,10 +35,7 @@ class CompanyInfo {
     if (matches.isEmpty) {
       return ticker;
     }
-    String companyName = matches[0].group(0) ?? '';
-    if (companyName.isEmpty) {
-      return ticker;
-    }
+    String companyName = matches[0].group(0) ?? ' ';
     companyName = companyName
         .trim()
         .split(' ')
