@@ -44,6 +44,14 @@ main() {
 
     expect(result, companyInfo);
   });
+
+  test('Should throw if LoadCompanyInfoRepository.companyInfo throws', () async {
+    when(loadCompanyInfoRepository.companyInfo(ticker)).thenThrow(Error());
+
+    final future = sut(ticker);
+
+    expect(future, throwsA(isA<Error>()));
+  });
 }
 
 class LoadCompanyInfoRepositorySpy extends Mock implements LoadCompanyInfoRepository {
