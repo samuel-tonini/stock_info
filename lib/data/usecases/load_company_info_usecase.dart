@@ -1,8 +1,9 @@
+import '../../domain/usecases/usecases.dart';
 import '../../domain/models/models.dart';
 
 import '../protocols/protocols.dart';
 
-class LoadCompanyInfoUsecase {
+class LoadCompanyInfoUsecase implements LoadCompanyInfo {
   LoadCompanyInfoUsecase(this.loadCompanyInfoRepository);
 
   final LoadCompanyInfoRepository loadCompanyInfoRepository;
