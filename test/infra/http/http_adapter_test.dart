@@ -14,19 +14,27 @@ main() {
   late String response;
   late HttpAdapter sut;
   late Map<String, String> defaultHeaders;
+  late String hostHeader;
+  late String keyHeader;
 
   setUp(() {
     baseUrl = 'http://localhost:8080';
     resourceUrl = '/tr/trending';
+    hostHeader = 'any_host';
+    keyHeader = '123';
     defaultHeaders = {
       HttpHeaders.acceptHeader: ContentType.json.value,
       HttpHeaders.contentTypeHeader: ContentType.json.value,
+      'x-rapidapi-host': hostHeader,
+      'x-rapidapi-key': keyHeader,
     };
     client = ClientSpy();
     response = '{"any_key": "any_value"}';
     sut = HttpAdapter(
       client: client,
       baseUrl: baseUrl,
+      hostHeader: hostHeader,
+      keyHeader: keyHeader,
     );
     when(client.get(
       Uri.parse('$baseUrl$resourceUrl'),
