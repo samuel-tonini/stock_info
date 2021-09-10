@@ -4,6 +4,8 @@ import '../../../domain/models/models.dart';
 
 import '../../protocols/protocols.dart';
 
+import 'components/components.dart';
+
 class CompanyInfoPage extends StatelessWidget {
   const CompanyInfoPage(this.presenter, {Key? key}) : super(key: key);
 
@@ -28,35 +30,29 @@ class CompanyInfoPage extends StatelessWidget {
             );
           } else if (snapshot.hasData && snapshot.data != null) {
             body = Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.only(
+                left: 16.0,
+                right: 16.0,
+                bottom: 16.0,
+              ),
               child: SingleChildScrollView(
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Address', style: textTheme.subtitle2),
-                    SizedBox(width: 8.0, height: 8.0),
-                    Text(snapshot.data?.address ?? '', style: textTheme.bodyText1),
-                    Text('${snapshot.data?.city ?? ''}, ${snapshot.data?.state ?? ''}', style: textTheme.bodyText1),
-                    Text(snapshot.data?.zip ?? '', style: textTheme.bodyText1),
-                    Text(snapshot.data?.country ?? '', style: textTheme.bodyText1),
-                    SizedBox(width: 16.0, height: 16.0),
-                    Text('Phone', style: textTheme.subtitle2),
-                    SizedBox(width: 8.0, height: 8.0),
-                    Text(snapshot.data?.phone ?? '', style: textTheme.bodyText1),
-                    SizedBox(width: 16.0, height: 16.0),
-                    Text('Site', style: textTheme.subtitle2),
-                    SizedBox(width: 8.0, height: 8.0),
-                    Text(snapshot.data?.webSite ?? '', style: textTheme.bodyText1),
-                    SizedBox(width: 16.0, height: 16.0),
-                    Text('Sector', style: textTheme.subtitle2),
-                    SizedBox(width: 8.0, height: 8.0),
-                    Text('${snapshot.data?.sector ?? ''}, ${snapshot.data?.industry ?? ''}',
-                        style: textTheme.bodyText1),
-                    SizedBox(width: 16.0, height: 16.0),
-                    Text('Description', style: textTheme.subtitle2),
-                    SizedBox(width: 8.0, height: 8.0),
-                    Text(snapshot.data?.description ?? '', style: textTheme.bodyText1),
+                    SectionTitle('Address'),
+                    SectionItem(snapshot.data?.address ?? ''),
+                    SectionItem('${snapshot.data?.city ?? ''}, ${snapshot.data?.state ?? ''}'),
+                    SectionItem(snapshot.data?.zip ?? ''),
+                    SectionItem(snapshot.data?.country ?? ''),
+                    SectionTitle('Phone'),
+                    SectionItem(snapshot.data?.phone ?? ''),
+                    SectionTitle('Site'),
+                    SectionItem(snapshot.data?.webSite ?? ''),
+                    SectionTitle('Sector'),
+                    SectionItem('${snapshot.data?.sector ?? ''}, ${snapshot.data?.industry ?? ''}'),
+                    SectionTitle('Description'),
+                    SectionItem(snapshot.data?.description ?? ''),
                   ],
                 ),
               ),
@@ -79,7 +75,10 @@ class CompanyInfoPage extends StatelessWidget {
             appBar: AppBar(
               title: Text(presenter.title),
             ),
-            body: body,
+            body: AnimatedSwitcher(
+              duration: kThemeAnimationDuration,
+              child: body,
+            ),
           );
         });
   }
