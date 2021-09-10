@@ -4,9 +4,10 @@ import 'package:get/get.dart';
 Widget makePages({
   required String path,
   required Widget Function() page,
+  bool goToPath = true,
 }) {
   return GetMaterialApp(
-    initialRoute: path,
+    initialRoute: goToPath ? path : '/any_route',
     getPages: [
       GetPage(
         name: path,
