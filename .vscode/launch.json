@@ -2,10 +2,22 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Launch",
+      "name": "Flutter: Launch",
       "request": "launch",
       "type": "dart",
       "program": "lib/main/main.dart"
+    },
+    {
+      "name": "Flutter: Run all Tests",
+      "type": "dart",
+      "request": "launch",
+      "program": "./test/"
+    },
+    {
+      "name": "Flutter: Run all Tests of Current File",
+      "type": "dart",
+      "request": "launch",
+      "program": "${file}"
     },
   ]
 }
