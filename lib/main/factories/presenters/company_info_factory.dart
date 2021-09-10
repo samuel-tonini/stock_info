@@ -9,6 +9,7 @@ import '../usecase/usecase.dart';
 CompanyInfoPresenter makeGetxCompanyInfoPresenter() {
   return GetxCompanyInfoPresenter(
     loadCompanyInfo: makeHttpLoadCompanyInfoUsecase(),
+    loadStockPriceHistory: makeHttpLoadStockPriceHistoryUsecase(),
     ticker: Ticker(Get.parameters['ticker'] ?? ''),
   );
 }
