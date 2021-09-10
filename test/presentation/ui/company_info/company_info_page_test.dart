@@ -1,3 +1,4 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get/get.dart';
@@ -23,7 +24,7 @@ main() {
   Future<void> loadPage(WidgetTester tester) async {
     await tester.pumpWidget(
       makePages(
-        path: '/stock_tickers',
+        path: '/company_info',
         page: () => CompanyInfoPage(presenter),
       ),
     );
@@ -75,33 +76,34 @@ main() {
     await loadPage(tester);
 
     verify(presenter.load()).called(1);
-    expect(find.bySemanticsLabel(title), findsOneWidget);
+    expect(find.text(title), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    expect(find.bySemanticsLabel('Wait...'), findsOneWidget);
+    expect(find.text('Wait...'), findsOneWidget);
 
     await tester.pumpAndSettle();
 
-    expect(find.bySemanticsLabel(companyInfo.name), findsOneWidget);
+    expect(find.text(companyInfo.name), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
-    expect(find.bySemanticsLabel('Wait...'), findsNothing);
-    expect(find.bySemanticsLabel('Address'), findsOneWidget);
-    expect(find.bySemanticsLabel(companyInfo.address), findsOneWidget);
-    expect(find.bySemanticsLabel('${companyInfo.city}, ${companyInfo.state}'), findsOneWidget);
-    expect(find.bySemanticsLabel(companyInfo.zip), findsOneWidget);
-    expect(find.bySemanticsLabel(companyInfo.country), findsOneWidget);
-    expect(find.bySemanticsLabel('Phone'), findsOneWidget);
-    expect(find.bySemanticsLabel(companyInfo.phone), findsOneWidget);
-    expect(find.bySemanticsLabel('Site'), findsOneWidget);
-    expect(find.bySemanticsLabel(companyInfo.webSite), findsOneWidget);
-    expect(find.bySemanticsLabel('Sector'), findsOneWidget);
-    expect(find.bySemanticsLabel('${companyInfo.sector}, ${companyInfo.industry}'), findsOneWidget);
-    expect(find.bySemanticsLabel('Description'), findsOneWidget);
-    expect(find.bySemanticsLabel(companyInfo.description), findsOneWidget);
+    expect(find.text('Wait...'), findsNothing);
+    expect(find.byType(LineChart), findsOneWidget);
+    expect(find.text('Address'), findsOneWidget);
+    expect(find.text(companyInfo.address), findsOneWidget);
+    expect(find.text('${companyInfo.city}, ${companyInfo.state}'), findsOneWidget);
+    expect(find.text(companyInfo.zip), findsOneWidget);
+    expect(find.text(companyInfo.country), findsOneWidget);
+    expect(find.text('Phone'), findsOneWidget);
+    expect(find.text(companyInfo.phone), findsOneWidget);
+    expect(find.text('Site'), findsOneWidget);
+    expect(find.text(companyInfo.webSite), findsOneWidget);
+    expect(find.text('Sector'), findsOneWidget);
+    expect(find.text('${companyInfo.sector}, ${companyInfo.industry}'), findsOneWidget);
+    expect(find.text('Description'), findsOneWidget);
+    expect(find.text(companyInfo.description, skipOffstage: false), findsOneWidget);
     for (final priceInterval in PriceInterval.values) {
       expect(
         find.ancestor(
-          of: find.bySemanticsLabel(priceInterval.description),
-          matching: find.byType(priceIntervalStreamController.value == priceInterval ? TextButton : ElevatedButton),
+          of: find.text(priceInterval.description),
+          matching: find.byType(priceIntervalStreamController.value == priceInterval ? OutlinedButton : ElevatedButton),
         ),
         findsOneWidget,
       );
@@ -123,16 +125,16 @@ main() {
     await loadPage(tester);
 
     verify(presenter.load()).called(1);
-    expect(find.bySemanticsLabel(title), findsOneWidget);
+    expect(find.text(title), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsOneWidget);
-    expect(find.bySemanticsLabel('Wait...'), findsOneWidget);
+    expect(find.text('Wait...'), findsOneWidget);
 
     await tester.pumpAndSettle();
 
-    expect(find.bySemanticsLabel(title), findsOneWidget);
+    expect(find.text(title), findsOneWidget);
     expect(find.byType(CircularProgressIndicator), findsNothing);
-    expect(find.bySemanticsLabel('Wait...'), findsNothing);
-    expect(find.bySemanticsLabel('Error'), findsOneWidget);
+    expect(find.text('Wait...'), findsNothing);
+    expect(find.text('Error'), findsOneWidget);
   });
 
   testWidgets('Should update button correctly', (tester) async {
@@ -143,8 +145,9 @@ main() {
 
     for (final priceIntervalItem in PriceInterval.values) {
       finder = find.ancestor(
-        of: find.bySemanticsLabel(priceIntervalItem.description),
-        matching: find.byType(priceIntervalStreamController.value == priceIntervalItem ? TextButton : ElevatedButton),
+        of: find.text(priceIntervalItem.description),
+        matching:
+            find.byType(priceIntervalStreamController.value == priceIntervalItem ? OutlinedButton : ElevatedButton),
       );
 
       expect(finder, findsOneWidget);
