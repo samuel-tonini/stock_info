@@ -46,3 +46,6 @@ app.*.map.json
 
 # Code coverage report
 coverage
+
+# Configuration file
+lib/main/config/env.dart
