@@ -14,7 +14,11 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+        appBarTheme: AppBarTheme(
+          brightness: Brightness.dark,
+        ),
       ),
+      debugShowCheckedModeBanner: false,
       initialRoute: '/stock_tickers',
       getPages: [
         GetPage(name: '/stock_tickers', page: makeStockTickersPage),
