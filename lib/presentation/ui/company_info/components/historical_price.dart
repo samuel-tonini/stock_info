@@ -14,7 +14,10 @@ class HistoricalPrice extends GetView<CompanyInfoPresenter> {
 
   final scrollController = ScrollController();
 
-  LineChartData _chartData(List<HistoricalStockPriceViewModel> data) {
+  LineChartData _chartData({
+    required List<HistoricalStockPriceViewModel> data,
+    required PriceInterval priceInterval,
+  }) {
     List<Color> gradientColors = [
       const Color(0xff23b6e6),
       const Color(0xff02d39a),
@@ -44,30 +47,32 @@ class HistoricalPrice extends GetView<CompanyInfoPresenter> {
         getTouchedSpotIndicator: (LineChartBarData barData, List<int> spotIndexes) {
           return spotIndexes.map((index) {
             return TouchedSpotIndicatorData(
-              FlLine(
-                color: Colors.pink,
-              ),
+              FlLine(),
               FlDotData(
                 show: true,
                 getDotPainter: (spot, percent, barData, index) => FlDotCirclePainter(
                   radius: 8,
                   strokeWidth: 2,
-                  strokeColor: Colors.black,
                 ),
               ),
             );
           }).toList();
         },
         touchTooltipData: LineTouchTooltipData(
-          tooltipBgColor: Colors.pink,
           fitInsideHorizontally: true,
           fitInsideVertically: true,
           tooltipRoundedRadius: 8,
           getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
             return lineBarsSpot.map((lineBarSpot) {
-              final index = lineBarSpot.y ~/ 5;
+              final index = (lineBarSpot.x / 5).floor();
+              final showTime = [
+                PriceInterval.fifteenMinutes,
+                PriceInterval.fiveMinutes,
+                PriceInterval.thirtyMinutes,
+                PriceInterval.oneHour,
+              ].contains(priceInterval);
               return LineTooltipItem(
-                '${lineBarSpot.y}\n${data[index].date}\n${data[index].hour}',
+                '${lineBarSpot.y}\n${data[index].date}${showTime ? '\n${data[index].hour}' : ''}',
                 const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
               );
             }).toList();
@@ -120,19 +125,28 @@ class HistoricalPrice extends GetView<CompanyInfoPresenter> {
                 ),
                 color: Color(0xff232d37)),
             child: Padding(
-              padding: const EdgeInsets.only(right: 8.0, left: 8.0, top: 8.0, bottom: 8.0),
+              padding: const EdgeInsets.all(12.0),
               child: SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child: StreamBuilder<List<HistoricalStockPriceViewModel>>(
                     stream: controller.historicalPriceStream,
                     initialData: <HistoricalStockPriceViewModel>[],
-                    builder: (context, snapshot) {
-                      return Container(
-                        width: max((snapshot.data?.length ?? 0) * 5, MediaQuery.of(context).size.shortestSide - 16.0),
-                        child: LineChart(
-                          _chartData(snapshot.data ?? []),
-                        ),
-                      );
+                    builder: (context, historicalStockPriceSnapshot) {
+                      return StreamBuilder<PriceInterval>(
+                          initialData: PriceInterval.oneHour,
+                          stream: controller.priceIntervalStream,
+                          builder: (context, priceIntervalSnapshot) {
+                            return Container(
+                              width: max((historicalStockPriceSnapshot.data?.length ?? 0) * 5,
+                                  MediaQuery.of(context).size.shortestSide - 24.0),
+                              child: LineChart(
+                                _chartData(
+                                  data: historicalStockPriceSnapshot.data ?? [],
+                                  priceInterval: priceIntervalSnapshot.data ?? PriceInterval.oneHour,
+                                ),
+                              ),
+                            );
+                          });
                     }),
               ),
             ),

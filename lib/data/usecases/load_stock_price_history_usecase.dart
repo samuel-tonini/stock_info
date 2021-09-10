@@ -16,6 +16,7 @@ class LoadStockPriceHistoryUsecase implements LoadStockPriceHistory {
       ticker: ticker,
       priceInterval: priceInterval,
     );
+    result.sort((a, b) => a.at.compareTo(b.at));
     return result;
   }
 }
