@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../domain/models/models.dart';
 
@@ -7,7 +8,9 @@ import '../../protocols/protocols.dart';
 import 'components/components.dart';
 
 class CompanyInfoPage extends StatelessWidget {
-  const CompanyInfoPage(this.presenter, {Key? key}) : super(key: key);
+  CompanyInfoPage(this.presenter, {Key? key}) : super(key: key) {
+    Get.put<CompanyInfoPresenter>(presenter);
+  }
 
   final CompanyInfoPresenter presenter;
 
@@ -40,6 +43,7 @@ class CompanyInfoPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    HistoricalPrice(),
                     SectionTitle('Address'),
                     SectionItem(snapshot.data?.address ?? ''),
                     SectionItem('${snapshot.data?.city ?? ''}, ${snapshot.data?.state ?? ''}'),

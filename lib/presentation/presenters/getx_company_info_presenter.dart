@@ -15,8 +15,8 @@ class GetxCompanyInfoPresenter implements CompanyInfoPresenter {
   }) : _title = ticker.abreviation;
 
   String _title;
-  PriceInterval _priceInterval = PriceInterval.oneHour;
   final _companyInfo = Rx<CompanyInfo?>(null);
+  final _priceInterval = Rx<PriceInterval>(PriceInterval.oneHour)..value = PriceInterval.oneHour;
   final _historicalPrice = Rx<List<HistoricalStockPriceViewModel>>(<HistoricalStockPriceViewModel>[]);
   final Ticker ticker;
   final LoadCompanyInfo loadCompanyInfo;
@@ -32,12 +32,12 @@ class GetxCompanyInfoPresenter implements CompanyInfoPresenter {
   Stream<List<HistoricalStockPriceViewModel>> get historicalPriceStream => _historicalPrice.stream;
 
   @override
-  PriceInterval get priceInterval => _priceInterval;
+  Stream<PriceInterval> get priceIntervalStream => _priceInterval.stream;
 
   @override
   set priceInterval(PriceInterval newPriceInterval) {
-    if (newPriceInterval != _priceInterval) {
-      _priceInterval = newPriceInterval;
+    if (newPriceInterval != _priceInterval.value) {
+      _priceInterval.value = newPriceInterval;
       _loadHistoricalStockPrice();
     }
   }
@@ -47,7 +47,7 @@ class GetxCompanyInfoPresenter implements CompanyInfoPresenter {
       _historicalPrice.value = [];
       final historicalPrice = await loadStockPriceHistory(
         ticker: ticker,
-        priceInterval: _priceInterval,
+        priceInterval: _priceInterval.value,
       );
       _historicalPrice.value = historicalPrice.map((price) => HistoricalStockPriceViewModel(price)).toList();
     } catch (error) {

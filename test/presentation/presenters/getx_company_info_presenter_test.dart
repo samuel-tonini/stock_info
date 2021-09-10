@@ -15,10 +15,12 @@ main() {
   late CompanyInfo companyInfo;
   late List<HistoricalStockPrice> prices;
   late List<HistoricalStockPriceViewModel> pricesViewModel;
+  late PriceInterval priceInterval;
 
   setUp(() {
     loadCompanyInfo = LoadCompanyInfoSpy();
     loadStockPriceHistory = LoadStockPriceHistorySpy();
+    priceInterval = PriceInterval.oneHour;
     ticker = Ticker('AAPL');
     prices = [
       HistoricalStockPrice(ticker: 'AAPL', at: DateTime.fromMillisecondsSinceEpoch(1587475800 * 1000), price: 272.37),
@@ -48,7 +50,7 @@ main() {
       loadStockPriceHistory: loadStockPriceHistory,
     );
     when(loadCompanyInfo(ticker)).thenAnswer((_) async => companyInfo);
-    when(loadStockPriceHistory(ticker: ticker, priceInterval: sut.priceInterval)).thenAnswer((_) async => prices);
+    when(loadStockPriceHistory(ticker: ticker, priceInterval: priceInterval)).thenAnswer((_) async => prices);
   });
 
   test('Should call LoadCompanyInfo and LoadStockPriceHistory', () async {
@@ -94,22 +96,15 @@ main() {
     expect(sut.title, companyInfo.name);
   });
 
-  test('Should start with one hour interval', () async {
-    expect(sut.priceInterval, PriceInterval.oneHour);
-  });
-
   test('Should change interval and reload historical data', () async {
-    expect(sut.priceInterval, PriceInterval.oneHour);
+    expectLater(sut.priceIntervalStream, emitsInOrder([PriceInterval.oneDay]));
 
     sut.priceInterval = PriceInterval.oneDay;
 
-    expect(sut.priceInterval, PriceInterval.oneDay);
     verify(loadStockPriceHistory(ticker: ticker, priceInterval: PriceInterval.oneDay)).called(1);
   });
 
   test('Should not reload historical data if same interval was provided', () async {
-    expect(sut.priceInterval, PriceInterval.oneHour);
-
     sut.priceInterval = PriceInterval.oneHour;
 
     verifyNever(loadStockPriceHistory(ticker: ticker, priceInterval: PriceInterval.oneHour));

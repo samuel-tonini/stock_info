@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:mockito/mockito.dart';
 
 import 'package:stock_info/domain/models/models.dart';
+import 'package:stock_info/presentation/models/models.dart';
 
 import 'package:stock_info/presentation/protocols/protocols.dart';
 import 'package:stock_info/presentation/ui/ui.dart';
@@ -13,8 +14,11 @@ import '../../helpers/helpers.dart';
 main() {
   late CompanyInfoPresenterSpy presenter;
   late Rx<CompanyInfo?> companyInfoStreamController;
+  late Rx<List<HistoricalStockPriceViewModel>> historicalPriceStreamController;
   late CompanyInfo companyInfo;
   late String title;
+  late Rx<PriceInterval> priceIntervalStreamController;
+  late PriceInterval priceInterval;
 
   Future<void> loadPage(WidgetTester tester) async {
     await tester.pumpWidget(
@@ -41,11 +45,19 @@ main() {
           'Apple Inc. designs, manufactures, and markets smartphones, personal computers, tablets, wearables, and accessories worldwide.',
     );
     title = 'AAPL';
+    priceIntervalStreamController = Rx<PriceInterval>(PriceInterval.oneHour);
     presenter = CompanyInfoPresenterSpy();
     companyInfoStreamController = Rx<CompanyInfo?>(null);
+    historicalPriceStreamController = Rx<List<HistoricalStockPriceViewModel>>(<HistoricalStockPriceViewModel>[]);
+    priceInterval = PriceInterval.oneHour;
 
     when(presenter.companyInfoStream).thenAnswer((_) => companyInfoStreamController.stream);
+    when(presenter.historicalPriceStream).thenAnswer((_) => historicalPriceStreamController.stream);
     when(presenter.title).thenAnswer((_) => title);
+    when(presenter.priceIntervalStream).thenAnswer((_) => priceIntervalStreamController.stream);
+    when(presenter.priceInterval = priceInterval).thenAnswer(
+      (_) => priceIntervalStreamController.value = priceInterval,
+    );
     when(presenter.load()).thenAnswer((_) async {
       companyInfoStreamController.value = null;
       await Future.delayed(Duration.zero);
@@ -56,6 +68,7 @@ main() {
 
   tearDown(() {
     companyInfoStreamController.close();
+    historicalPriceStreamController.close();
   });
 
   testWidgets('Should render initial page correctly', (tester) async {
@@ -84,6 +97,15 @@ main() {
     expect(find.bySemanticsLabel('${companyInfo.sector}, ${companyInfo.industry}'), findsOneWidget);
     expect(find.bySemanticsLabel('Description'), findsOneWidget);
     expect(find.bySemanticsLabel(companyInfo.description), findsOneWidget);
+    for (final priceInterval in PriceInterval.values) {
+      expect(
+        find.ancestor(
+          of: find.bySemanticsLabel(priceInterval.description),
+          matching: find.byType(priceIntervalStreamController.value == priceInterval ? TextButton : ElevatedButton),
+        ),
+        findsOneWidget,
+      );
+    }
   });
 
   testWidgets('Should render error page correctly', (tester) async {
@@ -112,6 +134,27 @@ main() {
     expect(find.bySemanticsLabel('Wait...'), findsNothing);
     expect(find.bySemanticsLabel('Error'), findsOneWidget);
   });
+
+  testWidgets('Should update button correctly', (tester) async {
+    await loadPage(tester);
+    await tester.pumpAndSettle();
+
+    Finder finder;
+
+    for (final priceIntervalItem in PriceInterval.values) {
+      finder = find.ancestor(
+        of: find.bySemanticsLabel(priceIntervalItem.description),
+        matching: find.byType(priceIntervalStreamController.value == priceIntervalItem ? TextButton : ElevatedButton),
+      );
+
+      expect(finder, findsOneWidget);
+
+      await tester.tap(finder);
+      await tester.pumpAndSettle();
+
+      expect(finder, findsOneWidget);
+    }
+  });
 }
 
 class CompanyInfoPresenterSpy extends Mock implements CompanyInfoPresenter {
@@ -133,6 +176,27 @@ class CompanyInfoPresenterSpy extends Mock implements CompanyInfoPresenter {
     return super.noSuchMethod(
       Invocation.method(#load, []),
       returnValue: null,
+    );
+  }
+
+  Stream<List<HistoricalStockPriceViewModel>> get historicalPriceStream {
+    return super.noSuchMethod(
+      Invocation.getter(#historicalPriceStream),
+      returnValue: Rx<List<HistoricalStockPriceViewModel>>(<HistoricalStockPriceViewModel>[]).stream,
+    );
+  }
+
+  Stream<PriceInterval> get priceIntervalStream {
+    return super.noSuchMethod(
+      Invocation.getter(#priceIntervalStream),
+      returnValue: Rx<PriceInterval>(PriceInterval.oneHour).stream,
+    );
+  }
+
+  set priceInterval(PriceInterval newPriceInterval) {
+    return super.noSuchMethod(
+      Invocation.setter(#priceInterval, [newPriceInterval]),
+      returnValue: PriceInterval.oneHour,
     );
   }
 }

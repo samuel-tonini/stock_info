@@ -16,6 +16,8 @@ extension PriceIntervalExtension on PriceInterval {
         return '5m';
       case PriceInterval.fifteenMinutes:
         return '15m';
+      case PriceInterval.thirtyMinutes:
+        return '30m';
       case PriceInterval.oneDay:
         return '1d';
       case PriceInterval.oneWeek:
