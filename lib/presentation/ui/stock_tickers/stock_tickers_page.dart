@@ -16,12 +16,18 @@ class StockTickersPage extends StatelessWidget {
       body: Builder(
         builder: (context) {
           presenter.load();
+
+          final textTheme = Theme.of(context).textTheme;
+
           return StreamBuilder<List<String>>(
               stream: presenter.tickersStream,
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
                   return Center(
-                    child: Text('Error'),
+                    child: Text(
+                      'Error',
+                      style: textTheme.headline4,
+                    ),
                   );
                 }
                 if (snapshot.hasData && (snapshot.data?.length ?? 0) > 0) {
@@ -35,12 +41,16 @@ class StockTickersPage extends StatelessWidget {
                     itemCount: snapshot.data?.length ?? 0,
                   );
                 }
-                return Column(
-                  children: [
-                    CircularProgressIndicator(),
-                    SizedBox(width: 16.0, height: 16.0),
-                    Text('Wait...'),
-                  ],
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      CircularProgressIndicator(),
+                      SizedBox(width: 16.0, height: 16.0),
+                      Text('Wait...', style: textTheme.headline6),
+                    ],
+                  ),
                 );
               });
         },
