@@ -43,7 +43,9 @@ class CompanyInfoPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    SectionTitle('Stock Price History'),
                     HistoricalPrice(),
+                    SectionTitle('Company Information'),
                     SectionTitle('Address'),
                     SectionItem(snapshot.data?.address ?? ''),
                     SectionItem('${snapshot.data?.city ?? ''}, ${snapshot.data?.state ?? ''}'),

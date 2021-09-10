@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -8,7 +10,9 @@ import '../../../models/models.dart';
 import '../../../protocols/protocols.dart';
 
 class HistoricalPrice extends GetView<CompanyInfoPresenter> {
-  const HistoricalPrice({Key? key}) : super(key: key);
+  HistoricalPrice({Key? key}) : super(key: key);
+
+  final scrollController = ScrollController();
 
   LineChartData _chartData(List<HistoricalStockPriceViewModel> data) {
     List<Color> gradientColors = [
@@ -16,7 +20,7 @@ class HistoricalPrice extends GetView<CompanyInfoPresenter> {
       const Color(0xff02d39a),
     ];
 
-    double counter = -1.0;
+    double counter = -5.0;
 
     return LineChartData(
       gridData: FlGridData(
@@ -56,6 +60,8 @@ class HistoricalPrice extends GetView<CompanyInfoPresenter> {
         },
         touchTooltipData: LineTouchTooltipData(
           tooltipBgColor: Colors.pink,
+          fitInsideHorizontally: true,
+          fitInsideVertically: true,
           tooltipRoundedRadius: 8,
           getTooltipItems: (List<LineBarSpot> lineBarsSpot) {
             return lineBarsSpot.map((lineBarSpot) {
@@ -103,6 +109,7 @@ class HistoricalPrice extends GetView<CompanyInfoPresenter> {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         AspectRatio(
           aspectRatio: 1.70,
@@ -113,13 +120,21 @@ class HistoricalPrice extends GetView<CompanyInfoPresenter> {
                 ),
                 color: Color(0xff232d37)),
             child: Padding(
-              padding: const EdgeInsets.only(right: 18.0, left: 12.0, top: 24, bottom: 12),
-              child: StreamBuilder<List<HistoricalStockPriceViewModel>>(
-                  stream: controller.historicalPriceStream,
-                  initialData: <HistoricalStockPriceViewModel>[],
-                  builder: (context, snapshot) {
-                    return LineChart(_chartData(snapshot.data ?? []));
-                  }),
+              padding: const EdgeInsets.only(right: 8.0, left: 8.0, top: 8.0, bottom: 8.0),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: StreamBuilder<List<HistoricalStockPriceViewModel>>(
+                    stream: controller.historicalPriceStream,
+                    initialData: <HistoricalStockPriceViewModel>[],
+                    builder: (context, snapshot) {
+                      return Container(
+                        width: max((snapshot.data?.length ?? 0) * 5, MediaQuery.of(context).size.shortestSide - 16.0),
+                        child: LineChart(
+                          _chartData(snapshot.data ?? []),
+                        ),
+                      );
+                    }),
+              ),
             ),
           ),
         ),
@@ -128,17 +143,24 @@ class HistoricalPrice extends GetView<CompanyInfoPresenter> {
           initialData: PriceInterval.oneHour,
           builder: (context, snapshot) {
             return Wrap(
+              runAlignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: [
                 for (final priceInterval in PriceInterval.values) ...[
-                  snapshot.data == priceInterval
-                      ? TextButton(
-                          onPressed: () => controller.priceInterval = priceInterval,
-                          child: Text(priceInterval.description),
-                        )
-                      : ElevatedButton(
-                          onPressed: () => controller.priceInterval = priceInterval,
-                          child: Text(priceInterval.description),
-                        ),
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 8.0, vertical: 2.0),
+                    child: snapshot.data == priceInterval
+                        ? OutlinedButton(
+                            onPressed: () => controller.priceInterval = priceInterval,
+                            child: Text(priceInterval.description),
+                            style: OutlinedButton.styleFrom(
+                              side: BorderSide(width: 1.0, color: Colors.blue),
+                            ))
+                        : ElevatedButton(
+                            onPressed: () => controller.priceInterval = priceInterval,
+                            child: Text(priceInterval.description),
+                          ),
+                  ),
                 ],
               ],
             );
