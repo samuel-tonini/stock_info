@@ -7,7 +7,6 @@ import 'package:stock_info/domain/models/models.dart';
 import 'package:stock_info/domain/models/ticker.dart';
 
 import 'package:stock_info/infra/http/http.dart';
-import 'package:stock_info/infra/models/models.dart';
 import 'package:stock_info/infra/protocols/protocols.dart';
 
 main() {
@@ -264,7 +263,7 @@ main() {
         ),
       ];
       sut = HttpStockRepository(httpClient);
-      url = '/hi/history/${ticker.abreviation}/${HttpPriceInterval.toQueryParam(priceInterval)}';
+      url = '/hi/history/${ticker.abreviation}/${priceInterval.description}';
       sutResult = jsonDecode(
         '{"meta":{"currency":"USD","symbol":"${ticker.abreviation}","exchangeName":"NMS","instrumentType":"EQUITY","firstTradeDate":345479400,"regularMarketTime":1631199340,"gmtoffset":-14400,"timezone":"EDT","exchangeTimezoneName":"America/New_York","regularMarketPrice":155.315,"chartPreviousClose":146.09,"previousClose":155.11,"scale":3,"priceHint":2,"dataGranularity":"15m","range":""},"items":{"1628520300":{"date":"09-08-2021","open":146.1,"high":146.19,"low":145.95,"close":146.06},"1628521200":{"date":"09-08-2021","open":146.06,"high":146.16,"low":145.79,"close":145.85},"1628522100":{"date":"09-08-2021","open":145.85,"high":146.15,"low":145.8,"close":146.09},"1628523000":{"date":"09-08-2021","open":146.1,"high":146.13,"low":145.91,"close":146.03},"1628523900":{"date":"09-08-2021","open":146.02,"high":146.15,"low":145.92,"close":146.14},"1628524800":{"date":"09-08-2021","open":146.14,"high":146.15,"low":145.91,"close":146},"1628525700":{"date":"09-08-2021","open":145.93,"high":146.01,"low":145.82,"close":145.84},"1628526600":{"date":"09-08-2021","open":145.85,"high":145.95,"low":145.79,"close":145.86},"1628527500":{"date":"09-08-2021","open":145.86,"high":145.97,"low":145.83,"close":145.85},"1628528400":{"date":"09-08-2021","open":145.85,"high":145.97,"low":145.81,"close":145}},"error":null}',
       );

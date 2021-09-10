@@ -46,7 +46,7 @@ class HttpStockRepository
     required PriceInterval priceInterval,
   }) async {
     final rawJson = await httpClient.request(
-      '/hi/history/${ticker.abreviation}/${HttpPriceInterval.toQueryParam(priceInterval)}',
+      '/hi/history/${ticker.abreviation}/${priceInterval.description}',
     );
     final result = <HistoricalStockPrice>[];
     if (rawJson == null || rawJson == '') {
