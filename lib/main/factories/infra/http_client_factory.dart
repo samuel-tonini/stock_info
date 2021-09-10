@@ -9,5 +9,7 @@ HttpClient makeHttpClient() {
   return HttpAdapter(
     baseUrl: Env.baseUrl,
     client: Client(),
+    hostHeader: Env.hostHeader,
+    keyHeader: Env.keyHeader,
   );
 }

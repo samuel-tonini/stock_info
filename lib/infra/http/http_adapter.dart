@@ -6,10 +6,17 @@ import 'package:http/http.dart';
 import '../protocols/protocols.dart';
 
 class HttpAdapter implements HttpClient {
-  HttpAdapter({required this.client, required this.baseUrl});
+  HttpAdapter({
+    required this.client,
+    required this.baseUrl,
+    required this.hostHeader,
+    required this.keyHeader,
+  });
 
   final Client client;
   final String baseUrl;
+  final String hostHeader;
+  final String keyHeader;
 
   @override
   Future<dynamic> request(String resourceUrl) async {
@@ -18,6 +25,8 @@ class HttpAdapter implements HttpClient {
       headers: {
         HttpHeaders.acceptHeader: ContentType.json.value,
         HttpHeaders.contentTypeHeader: ContentType.json.value,
+        'x-rapidapi-host': hostHeader,
+        'x-rapidapi-key': keyHeader,
       },
     );
     if (rawResponse.statusCode < 200 || rawResponse.statusCode > 299) {
