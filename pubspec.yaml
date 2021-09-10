@@ -15,6 +15,7 @@ dependencies:
   equatable:
   http:
   get:
+  fl_chart:
 
 dev_dependencies:
   flutter_test:
